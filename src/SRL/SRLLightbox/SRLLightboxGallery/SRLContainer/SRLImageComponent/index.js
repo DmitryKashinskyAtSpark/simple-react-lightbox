@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import {
   SRLImage,
   SRLPanzoomedImage
@@ -21,12 +21,12 @@ const ImageLoad = React.memo(
   }) => {
     const [loading, setLoading] = useState(true)
 
-    function handleTouchStart(e) {
+    const handleTouchStart = useCallback((e) => {
       if (e.touches.length > 1 && !panzoomEnabled && e.cancelable) {
         e.preventDefault()
         handlePanzoom(true)
       }
-    }
+    }, [panzoomEnabled, handlePanzoom]);
 
     useEffect(() => {
       const imageToLoad = new Image()
@@ -43,11 +43,11 @@ const ImageLoad = React.memo(
       })
 
       return () => {
-        document.addEventListener('touchstart', handleTouchStart, {
+        document.removeEventListener('touchstart', handleTouchStart, {
           passive: false
         })
       }
-    }, [])
+    }, [handleTouchStart])
 
     const content = loading ? (
       <SRLLoadingIndicator />

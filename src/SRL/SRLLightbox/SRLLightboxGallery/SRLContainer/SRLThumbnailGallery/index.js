@@ -104,7 +104,9 @@ const SRLThumbnailGalleryComponent = ({
       }
     }
 
-    function handleMouseDownOnThumbnails(pageX, pageY) {
+    function handleMouseDownOnThumbnails(e) {
+      const { pageX, pageY } = e;
+
       if (SRLTCR.scrollWidth > SRLTCR.offsetWidth) {
         isDown.current = true
         startX.current = pageX - SRLTCR.offsetLeft
@@ -123,7 +125,9 @@ const SRLThumbnailGalleryComponent = ({
       SRLTCR.classList.remove('SRLDraggable')
     }
 
-    function handleMouseMoveOnThumbnails(pageX, pageY) {
+    function handleMouseMoveOnThumbnails(e) {
+      const { pageX, pageY } = e;
+
       if (!isDown.current) return
       if (SRLTCR.scrollHeight > SRLTCR.offsetHeight) {
         const y = pageY - SRLTCR.offsetTop
@@ -137,29 +141,17 @@ const SRLThumbnailGalleryComponent = ({
     }
 
     // EVENT LISTENERS
-    SRLTCR.addEventListener('mousedown', (e) =>
-      handleMouseDownOnThumbnails(e.pageX, e.pageY)
-    )
-    SRLTCR.addEventListener('mouseleave', () => handleMouseLeaveOnThumbnails())
-    SRLTCR.addEventListener('mouseup', () => handleMouseLeaveOnThumbnails())
-    SRLTCR.addEventListener('mousemove', (e) =>
-      handleMouseMoveOnThumbnails(e.pageX, e.pageY)
-    )
+    SRLTCR.addEventListener('mousedown', handleMouseDownOnThumbnails)
+    SRLTCR.addEventListener('mouseleave', handleMouseLeaveOnThumbnails)
+    SRLTCR.addEventListener('mouseup', handleMouseLeaveOnThumbnails)
+    SRLTCR.addEventListener('mousemove', handleMouseMoveOnThumbnails)
 
     // CLEAN UP
     return () => {
-      SRLTCR.removeEventListener('mousedown', (e) =>
-        handleMouseDownOnThumbnails(e.pageX)
-      )
-      SRLTCR.removeEventListener('mouseleave', () =>
-        handleMouseLeaveOnThumbnails()
-      )
-      SRLTCR.removeEventListener('mouseup', () =>
-        handleMouseLeaveOnThumbnails()
-      )
-      SRLTCR.removeEventListener('mousemove', (e) =>
-        handleMouseMoveOnThumbnails(e)
-      )
+      SRLTCR.removeEventListener('mousedown', handleMouseDownOnThumbnails)
+      SRLTCR.removeEventListener('mouseleave', handleMouseLeaveOnThumbnails)
+      SRLTCR.removeEventListener('mouseup', handleMouseLeaveOnThumbnails)
+      SRLTCR.removeEventListener('mousemove', handleMouseMoveOnThumbnails)
     }
   }, [currentId, handleCurrentElement, SRLThumbnailsRef, thumbnailsAlignment])
 
@@ -184,9 +176,8 @@ const SRLThumbnailGalleryComponent = ({
             thumbnailsGap={thumbnailsGap}
             key={element.id}
             id={element.id}
-            className={`SRLThumb SRLThumb${element.id} ${
-              currentId === element.id ? 'SRLThumbnailSelected' : ''
-            }`}
+            className={`SRLThumb SRLThumb${element.id} ${currentId === element.id ? 'SRLThumbnailSelected' : ''
+              }`}
             style={{
               backgroundImage: `url('${element.thumbnail}')`
             }}
